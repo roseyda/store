@@ -12,11 +12,11 @@
         @clicked="showProduct($event)"
       ></ProductCard>
     </v-col>
-    <ProductDialogue
+    <ProductDialog
       v-if="dialog"
       :dialog.sync="dialog"
       :product="selectedProduct"
-    ></ProductDialogue>
+    ></ProductDialog>
   </v-row>
 </template>
 
@@ -26,8 +26,8 @@ import ProductCard from '@/components/ProductCard'
 export default {
   components: {
     ProductCard,
-    ProductDialogue: () =>
-      import(/* webpackPrefetch: true */ '@/components/ProductDialogue'),
+    ProductDialog: () =>
+      import(/* webpackPrefetch: true */ '@/components/ProductDialog'),
   },
   data: () => ({
     dialog: false,
