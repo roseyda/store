@@ -1,22 +1,11 @@
 <template>
-  <v-app dark>
-    <v-navigation-drawer v-model="drawer" :clipped="clipped" fixed app>
-      <v-list>
-        <v-list-item
-          v-for="(item, i) in navItems"
-          :key="i"
-          :to="item.to"
-          nuxt
-          exact
-        >
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-app-bar :clipped-left="clipped" fixed app color="primary">
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+  <v-app v-resize="onResize" dark>
+    <NavDrawer :drawer-visible.sync="drawerVisible" />
+    <v-app-bar clipped-left fixed app color="primary">
+      <v-app-bar-nav-icon
+        v-if="isMobile"
+        @click.stop="drawerVisible = !drawerVisible"
+      />
       <transition name="fade" mode="out-in">
         <v-toolbar-title :key="$route.fullPath">
           {{ pageTitle }}
@@ -31,27 +20,32 @@
         </transition>
       </v-container>
     </v-main>
-    <v-footer :absolute="!fixed" app>
+    <v-footer app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
   </v-app>
 </template>
 
 <script>
+import CapitalizeMixin from '@/mixins/CapitalizeMixin'
+import NavDrawer from '@/components/NavDrawer'
+import { mapState } from 'vuex'
+
 export default {
-  data() {
-    return {
-      clipped: true,
-      drawer: false,
-      fixed: false,
-    }
+  components: {
+    NavDrawer,
   },
+  mixins: [CapitalizeMixin],
+  data: () => ({
+    drawerVisible: false,
+  }),
   async fetch() {
     await this.$store.dispatch('loadProducts')
     await this.$store.dispatch('loadCategories')
   },
 
   computed: {
+    ...mapState(['isMobile']),
     pageTitle() {
       return (
         this.capitalize(
@@ -61,24 +55,10 @@ export default {
         ) ?? 'Home'
       )
     },
-    navItems() {
-      return [
-        {
-          title: 'Home',
-          to: '/',
-        },
-        ...this.$store.state.categories.map((cat) => ({
-          title: this.capitalize(cat.categoryName),
-          to: `/categories/${cat.categoryId}`,
-        })),
-      ]
-    },
   },
   methods: {
-    capitalize(string) {
-      return typeof string === 'string'
-        ? string.charAt(0).toUpperCase() + string.slice(1)
-        : undefined
+    onResize() {
+      this.$store.dispatch('setMobile')
     },
   },
 }
