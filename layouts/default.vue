@@ -26,6 +26,7 @@
         </template>
         <span>Contact</span>
       </v-tooltip>
+      <ThemeSwitcher />
     </v-app-bar>
     <v-main>
       <v-container fluid fill-height>
@@ -47,11 +48,13 @@
 <script>
 import CapitalizeMixin from '@/mixins/CapitalizeMixin'
 import NavDrawer from '@/components/NavDrawer'
+import ThemeSwitcher from '@/components/ThemeSwitcher'
 import { mapState } from 'vuex'
 
 export default {
   components: {
     NavDrawer,
+    ThemeSwitcher,
     ContactDialog: () =>
       import(/* webpackPrefetch: true */ '@/components/ContactDialog'),
   },
@@ -64,7 +67,6 @@ export default {
     await this.$store.dispatch('loadCategories')
     await this.$store.dispatch('loadProducts')
   },
-
   computed: {
     ...mapState(['isMobile']),
     pageTitle() {
