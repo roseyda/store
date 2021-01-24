@@ -1,91 +1,76 @@
 <template>
-  <v-app dark>
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
-      app
-    >
-      <v-list>
-        <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
-        >
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-app-bar :clipped-left="clipped" fixed app>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn icon @click.stop="clipped = !clipped">
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <v-btn icon @click.stop="fixed = !fixed">
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
-      <v-toolbar-title v-text="title" />
+  <v-app v-resize="onResize" dark>
+    <NavDrawer :drawer-visible.sync="drawerVisible" />
+    <v-app-bar clipped-left fixed app color="primary">
+      <v-app-bar-nav-icon
+        v-if="isMobile"
+        @click.stop="drawerVisible = !drawerVisible"
+      />
+      <transition name="fade" mode="out-in">
+        <v-toolbar-title :key="$route.fullPath">
+          {{ pageTitle }}
+        </v-toolbar-title>
+      </transition>
       <v-spacer />
-      <v-btn icon @click.stop="rightDrawer = !rightDrawer">
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
     </v-app-bar>
     <v-main>
-      <v-container>
-        <nuxt />
+      <v-container fluid fill-height>
+        <transition name="fade" mode="out-in">
+          <nuxt :key="$route.fullPath" />
+        </transition>
       </v-container>
     </v-main>
-    <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light> mdi-repeat </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer :absolute="!fixed" app>
+    <v-footer app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
   </v-app>
 </template>
 
 <script>
+import CapitalizeMixin from '@/mixins/CapitalizeMixin'
+import NavDrawer from '@/components/NavDrawer'
+import { mapState } from 'vuex'
+
 export default {
-  data() {
-    return {
-      clipped: false,
-      drawer: false,
-      fixed: false,
-      items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/',
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire',
-        },
-      ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js',
-    }
+  components: {
+    NavDrawer,
+  },
+  mixins: [CapitalizeMixin],
+  data: () => ({
+    drawerVisible: false,
+  }),
+  async fetch() {
+    await this.$store.dispatch('loadCategories')
+    await this.$store.dispatch('loadProducts')
+  },
+
+  computed: {
+    ...mapState(['isMobile']),
+    pageTitle() {
+      return (
+        this.capitalize(
+          this.$store.getters.getCategoryByCategoryId(
+            this.$route.params.categoryId
+          )?.categoryName
+        ) ?? 'Home'
+      )
+    },
+  },
+  methods: {
+    onResize() {
+      this.$store.dispatch('setMobile')
+    },
   },
 }
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
