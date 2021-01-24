@@ -14,7 +14,7 @@
       <v-spacer />
     </v-app-bar>
     <v-main>
-      <v-container>
+      <v-container fluid fill-height>
         <transition name="fade" mode="out-in">
           <nuxt :key="$route.fullPath" />
         </transition>
