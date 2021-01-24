@@ -1,7 +1,16 @@
 import colors from 'vuetify/es5/util/colors'
 
 export default {
+  ssr: false,
+
+  // Target: https://go.nuxtjs.dev/config-target
+  target: 'static',
   // Global page headers: https://go.nuxtjs.dev/config-head
+  loading: {
+    color: colors.green.darken4,
+    height: '50px',
+    throttle: 0,
+  },
   head: {
     titleTemplate: '%s - store',
     title: 'store',
@@ -58,7 +67,7 @@ export default {
           primary: colors.green.darken1,
         },
         dark: {
-          primary: colors.blue.darken2,
+          primary: colors.green.darken1,
           accent: colors.grey.darken3,
           secondary: colors.amber.darken3,
           info: colors.teal.lighten1,

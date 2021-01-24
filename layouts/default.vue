@@ -40,8 +40,8 @@ export default {
     drawerVisible: false,
   }),
   async fetch() {
-    await this.$store.dispatch('loadProducts')
     await this.$store.dispatch('loadCategories')
+    await this.$store.dispatch('loadProducts')
   },
 
   computed: {
