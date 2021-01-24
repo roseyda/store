@@ -12,6 +12,20 @@
         </v-toolbar-title>
       </transition>
       <v-spacer />
+      <v-tooltip bottom>
+        <template #activator="{ on, attrs }">
+          <v-btn
+            icon
+            dark
+            v-bind="attrs"
+            v-on="on"
+            @click="contactDialog = true"
+          >
+            <v-icon dark> mdi-email </v-icon>
+          </v-btn>
+        </template>
+        <span>Contact</span>
+      </v-tooltip>
     </v-app-bar>
     <v-main>
       <v-container fluid fill-height>
@@ -23,6 +37,10 @@
     <v-footer app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
+    <ContactDialog
+      v-if="contactDialog"
+      :dialog.sync="contactDialog"
+    ></ContactDialog>
   </v-app>
 </template>
 
@@ -34,10 +52,13 @@ import { mapState } from 'vuex'
 export default {
   components: {
     NavDrawer,
+    ContactDialog: () =>
+      import(/* webpackPrefetch: true */ '@/components/ContactDialog'),
   },
   mixins: [CapitalizeMixin],
   data: () => ({
     drawerVisible: false,
+    contactDialog: false,
   }),
   async fetch() {
     await this.$store.dispatch('loadCategories')
