@@ -8,7 +8,7 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   loading: {
     color: colors.green.darken4,
-    height: '50px',
+    height: '5px',
     throttle: 0,
   },
   head: {
