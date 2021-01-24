@@ -79,6 +79,9 @@ export default {
       )
     },
   },
+  created() {
+    this.$store.dispatch('setMobile')
+  },
   methods: {
     onResize() {
       this.$store.dispatch('setMobile')
